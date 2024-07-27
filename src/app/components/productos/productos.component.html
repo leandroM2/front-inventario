@@ -1,0 +1,168 @@
+<app-dashboard></app-dashboard>
+    <nav  style="background-color: #198755;">
+        <div class="container-fluid" style="padding: 10px">
+              <h1 style="text-align: center; color: white;">Gestión de Productos</h1>
+        </div> 
+    </nav>
+    
+    <div class="col-md-12 p-2">
+      <div class="mb-3">
+        <input type="text" id="filter" placeholder="Buscar por Nombre" [(ngModel)]="filterTerm" style="width: 300px;">
+        <button type="button" class="btn btn-primary btn-sm" style="margin-left: 20px;"(click)="filterCategories()">Filtrar</button>
+        <button type="button" class="btn btn-success btn-sm" style="margin-left: 10px;" (click)="list()">Ver Lista Completa</button>
+      </div>
+        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="stockcero()"><i class="fa fa-user"></i> Nuevo Producto</button>
+        <div id="tableToPDF">
+        <table class="table mt-2 table-bordered">
+            <thead class="table-primary">
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Color</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Estado</th>
+                <th>Categoria</th>
+                <th>Proveedor</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of listproducts">
+                <td>{{item.id}}</td>
+                <td>{{item.nombre}}</td>
+                <td>{{item.color}}</td>
+                <td>{{item.precio}}</td>
+                <td>{{item.stock}}
+                  <!-- <button type="button" class="btn btn-warning btn-sm"  data-bs-toggle="modal" data-bs-target="#exampleModal2" (click)="selectItem(item)" >
+                    <i class="fa fa-pencil"></i>
+                </button> -->
+                </td>
+                <td>{{item.estado}}</td>
+                <td>{{item.categoryNombre}}</td>
+                
+                <td>{{item.supplierRazonSocial}}</td>
+                <td>
+                    <button type="button" class="btn btn-warning btn-sm"  data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="selectItem(item)" >
+                        <i class="fa fa-pencil"></i>
+                    </button>
+                    &nbsp;
+                    <button type="button" class="btn btn-danger btn-sm" (click)="delete(item.id)">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+  </div>
+
+<!-- TODO: Modals -->
+<div class="custom-modal">
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 *ngIf="!isUpdate" class="modal-title fs-5">Nuevo Producto</h1>
+          <h1 *ngIf="isUpdate" class="modal-title fs-5">Actualizar Producto</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="newProduct()"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="formProduct">
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Nombre</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" formControlName="nombre">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Color</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" formControlName="color">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">precio</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" formControlName="precio">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                  <label class="col-sm-2 col-form-label">Stock</label>
+                  <div class="col-sm-10">
+                    <input type="text" style="background-color: rgb(229, 219, 219);" class="form-control" formControlName="stock" readonly>
+                  </div>
+              </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Categoria</label>
+                      <div class="col-sm-10">
+                          <select id="cat" class="form-select" formControlName="categoryId" style="background-color:rgb(235, 235, 235)">
+                              <option value="" selected disabled>Seleccionar Categoria</option>
+                              <option *ngFor="let category of listcategorias" [value]="category.id">
+                                  {{category.nombre}}
+                              </option>
+                          </select>
+                      </div>
+                  </div>
+                  <div class="mb-3 row">
+                  <label class="col-sm-2 col-form-label">Proveedor</label>
+                  <div class="col-sm-10">
+                      <select id="prov" class="form-select" formControlName="supplierId"  style="background-color:rgb(235, 235, 235)">
+                          <option value="" selected disabled>Seleccionar Proveedor</option>
+                          <option *ngFor="let proveedor of listProveedores" [value]="proveedor.id">
+                              {{proveedor.razonSocial}}
+                          </option>
+                      </select>
+                  </div>
+                </div>
+              </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" (click)="newProduct()">Cerrar</button>
+          <button *ngIf="!isUpdate" type="button" class="btn btn-success btn-sm" (click)="save()">Guardar</button>
+          <button *ngIf="isUpdate" type="button" class="btn btn-warning btn-sm" data-bs-dismiss="modal" (click)="update()">Actualizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 *ngIf="!isUpdate" class="modal-title fs-5">Nuevo Producto</h1>
+          <h1 *ngIf="isUpdate" class="modal-title fs-5">Actualizar Stock</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="newProduct()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Productos a añadir</label>
+            <div class="col-sm-10">
+              <input id="mas" type="number" class="form-control" >
+            </div>
+        </div>
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label">Stock Actual</label>
+                <div class="col-sm-10">
+                  <input id="final" type="number" class="form-control" readonly>
+                </div>
+            </div>
+            <button type="button" class="btn btn-success btn-sm" (click)="suma()">Añadir</button>
+            <form [formGroup]="formProduct">
+                <div class="mb-3 row">
+                  <label class="col-sm-2 col-form-label">Stock Final</label>
+                  <div class="col-sm-10">
+                    <input id="stockfinal" type="text" class="form-control" formControlName="stock" readonly>
+                  </div>
+              </div>
+              </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+          <button *ngIf="!isUpdate" type="button" class="btn btn-success btn-sm" (click)="save()">Guardar</button>
+          <button *ngIf="isUpdate" type="button" class="btn btn-warning btn-sm" data-bs-dismiss="modal" (click)="update()">Actualizar</button>
+        </div>
+      </div>
+    </div>
+  </div> -->
+  <button type="button" class="btn btn-danger btn-sm" (click)="generatePDF()">Generar PDF</button>
